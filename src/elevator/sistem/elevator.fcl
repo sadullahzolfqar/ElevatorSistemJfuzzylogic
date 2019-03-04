@@ -1,0 +1,50 @@
+FUNCTION_BLOCK elevator
+
+VAR_INPUT                       // Two Inpus: 1) type of traffic in lift 2) Number of passengers waiting to elevator
+    Traffic_Type : REAL;        // first input type of traffic 1) up density 2) balanced 3) down density
+    Number_Passenger : REAL;    //Number of passengers waiting to elevator
+END_VAR
+
+VAR_OUTPUT
+    wait_floor : REAL;        //Elevator waiting floor
+END_VAR
+
+FUZZIFY Traffic_Type
+    TERM up := (5,0) (8,1) (10,0);
+    TERM balanced := (8,0) (12,1) (16,1) (18,0);
+    TERM down := (16,0) (18,1) (23,0);
+END_FUZZIFY
+
+FUZZIFY Number_Passenger
+    TERM few := (0,1) (7,0);
+    TERM medium :=(5,0) (7,1) (13,1)(15,0);
+    TERM much := (13,0) (20,1);
+END_FUZZIFY
+
+
+DEFUZZIFY wait_floor                                         //4 üyelik fonk var 
+    TERM lower :=(0,1) (3,0);
+    TERM lower_close :=(1,0) (2,1) (4,1) (5,0);
+    TERM middle := (3,0) (5,1) (8,1) (11,0);
+    TERM top_close := (8,0) (9,1) (12,1) (13,0);
+    TERM top :=(11,0) (14,1);
+    METHOD : COG;    // Durulama method
+    DEFAULT := 0; //KURAL ÇALIŞMAZSA SIFIR DEGERİ URETİR
+END_DEFUZZIFY
+
+
+RULEBLOCK  kurallarblok
+   
+    RULE 1 : IF Traffic_Type IS up AND Number_Passenger IS few THEN wait_floor IS lower_close;   
+    RULE 2 : IF Traffic_Type IS up AND Number_Passenger IS medium THEN wait_floor IS lower WITH 0.3;
+    RULE 3 : IF Traffic_Type IS up AND Number_Passenger IS much THEN wait_floor IS lower WITH 0.7;
+    RULE 4 : IF Traffic_Type IS balanced AND Number_Passenger IS few THEN wait_floor IS middle;
+    RULE 5 : IF Traffic_Type IS balanced AND Number_Passenger IS medium THEN wait_floor IS middle;
+    RULE 6 : IF Traffic_Type IS balanced AND Number_Passenger IS much THEN wait_floor IS middle;
+    RULE 7 : IF Traffic_Type IS down AND Number_Passenger IS few THEN wait_floor IS top_close;
+    RULE 8 : IF Traffic_Type IS down AND Number_Passenger IS medium THEN wait_floor IS top WITH 0.3;
+    RULE 9 : IF Traffic_Type IS down AND Number_Passenger IS much THEN wait_floor IS top WITH 0.7;
+
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK
