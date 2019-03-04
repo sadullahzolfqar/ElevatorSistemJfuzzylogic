@@ -1,4 +1,4 @@
 # ElevatorSistemJfuzzylogic
 
-a simpley elevator system 
+a simply elevator system 
 Java jfuzzy logic
